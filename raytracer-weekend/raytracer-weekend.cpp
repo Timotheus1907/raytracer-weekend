@@ -5,21 +5,31 @@
 #include <iostream>
 #include <fstream>
 
-bool hit_sphere(const point3& center, double radius, const ray& r) {
-	vec3 oc = r.origin() - center;
+// Quadratic formula to determine if a ray intersects a sphere
+// If discriminant is greater than 0, the ray intersects the sphere
+// returns value of t if ray intersects sphere, else returns -1.0
+double hit_sphere(const point3& center, double radius, const ray& r) {
+	vec3 oc = center - r.origin();
 	auto a = dot(r.direction(), r.direction());
-	auto b = 2.0 * dot(oc, r.direction());
+	auto b = -2.0 * dot(r.direction(), oc);
 	auto c = dot(oc, oc) - radius * radius;
 	auto discriminant = b * b - 4 * a * c;
-	return (discriminant > 0);
+
+	if (discriminant < 0) return -1.0;
+	// This possibly can return values from behind the camera
+	else return (-b - std::sqrt(discriminant)) / (2.0 * a);
 }
 
 color ray_color(const ray& r) {
 	point3 sphere_center(0, 0, -1);
 	double sphere_radius = 0.5;
 
-	if (hit_sphere(sphere_center, sphere_radius, r)) {
-		return color(1, 0, 0);
+	auto t = hit_sphere(sphere_center, sphere_radius, r);
+
+	if (t > 0.0) {
+		// Surface Normal
+		vec3 N = unit_vector(r.at(t) - sphere_center);
+		return 0.5 * color(N.x() + 1, N.y() + 1, N.z() + 1);
 	}
 
 	// Background color gradient
@@ -35,7 +45,7 @@ int main()
 	auto aspect_ratio = 16.0 / 9.0;
 	int image_width = 400;
 
-	// Image Height Calculation, and ensure that it's atleast 1
+	// Image Height, and ensure that it's atleast 1
 	int image_height = int(image_width / aspect_ratio);
 	image_height = (image_height < 1) ? 1 : image_height;
 
