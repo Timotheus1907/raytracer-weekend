@@ -4,6 +4,10 @@
 
 #include <iostream>
 #include <fstream>
+#include <vector>
+
+#define STB_IMAGE_WRITE_IMPLEMENTATION
+#include "stb_image_write.h"
 
 // Quadratic formula to determine if a ray intersects a sphere
 // If discriminant is greater than 0, the ray intersects the sphere
@@ -31,7 +35,7 @@ color ray_color(const ray& r) {
 		vec3 N = unit_vector(r.at(t) - sphere_center);
 		return 0.5 * color(N.x() + 1, N.y() + 1, N.z() + 1);
 	}
-
+	
 	// Background color gradient
 	vec3 unit_direction = unit_vector(r.direction());
 	auto a = 0.5 * (unit_direction.y() + 1.0);
@@ -43,11 +47,15 @@ int main()
 	// Image
 
 	auto aspect_ratio = 16.0 / 9.0;
-	int image_width = 854;
+	int image_width = 1280;
 
 	// Image Height, and ensure that it's atleast 1
 	int image_height = int(image_width / aspect_ratio);
 	image_height = (image_height < 1) ? 1 : image_height;
+
+	// Png setup
+	const int channels = 3;
+	std::vector<unsigned char> pixels(image_width * image_height * channels);
 
 	// Camera
 
@@ -79,12 +87,6 @@ int main()
 
 	// Render
 
-	std::ofstream file;
-	file.open("image.ppm");
-
-	// PPM Image Formatting
-	file << "P3\n" << image_width << ' ' << image_height << "\n255\n";
-
 	for (int j = 0; j < image_height; j++) {
 		std::cout << "\rScanlines remaining: " << (image_height - 1 - j) << ' ' << std::flush;
 		for (int i = 0; i < image_width; i++) {
@@ -94,13 +96,29 @@ int main()
 			ray r(camera_center, ray_direction);
 			color pixel_color = ray_color(r);
 
-			write_color(file, pixel_color);
+			int index = (j * image_width + i) * channels;
+
+			auto red = pixel_color.x();
+			auto green = pixel_color.y();
+			auto blue = pixel_color.z();
+			// Divide the color by the number of samples and gamma-correct for gamma=2.0.
+			int rbyte = int(255.999 * red);
+			int gbyte = int(255.999 * green);
+			int bbyte = int(255.999 * blue);
+			
+			pixels[index] = rbyte;
+			pixels[index + 1] = gbyte;
+			pixels[index + 2] = bbyte;
 		}
 	}
 
-	file.close();
+	const char* filename = "image.png";
 
-	std::cout << "\nImage Created!" << std::endl;
+	int success = stbi_write_png(filename, image_width, image_height, channels, pixels.data(), image_width * channels);
+
+	if (success) std::cout << "\nImage Created!" << std::endl;
+	else std::cout << "\nImage Creation Failed!" << std::endl;
+
 
 
 	return 0;
