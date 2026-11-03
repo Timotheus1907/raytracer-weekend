@@ -3,5 +3,5 @@
     <Platform Name="x64" />
     <Platform Name="x86" />
   </Configurations>
-  <Project Path="raytracer-weekend/raytracer-weekend.vcxproj" />
+  <Project Path="raytracer-weekend/raytracer-weekend.vcxproj" Id="e625571c-2f4b-485c-a566-86d1a48cb663" />
 </Solution>
