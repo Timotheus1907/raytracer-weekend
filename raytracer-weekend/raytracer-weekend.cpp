@@ -1,41 +1,20 @@
-#include "color.h"
-#include "ray.h"
-#include "vec3.h"
+#include "rtweekend.h"
+#include "hittable.h"
+#include "hittable_list.h"
+#include "sphere.h"
 
-#include <iostream>
-#include <fstream>
 #include <vector>
 
 #define STB_IMAGE_WRITE_IMPLEMENTATION
 #include "stb_image_write.h"
 
-// Quadratic formula to determine if a ray intersects a sphere
-// If discriminant is greater than 0, the ray intersects the sphere
-// returns value of t if ray intersects sphere, else returns -1.0
-double hit_sphere(const point3& center, double radius, const ray& r) {
-	vec3 oc = center - r.origin();
-	auto a = r.direction().length_squared();
-	auto h = dot(r.direction(), oc);
-	auto c = oc.length_squared() - radius * radius;
-	auto discriminant = h * h - a * c;
 
-	if (discriminant < 0) return -1.0;
-	// This possibly can return values from behind the camera
-	else return (h - std::sqrt(discriminant)) / a;
-}
-
-color ray_color(const ray& r) {
-	point3 sphere_center(0, 0, -1);
-	double sphere_radius = 0.5;
-
-	auto t = hit_sphere(sphere_center, sphere_radius, r);
-
-	if (t > 0.0) {
-		// Surface Normal
-		vec3 N = unit_vector(r.at(t) - sphere_center);
-		return 0.5 * color(N.x() + 1, N.y() + 1, N.z() + 1);
+static color ray_color(const ray& r, const hittable& world) {
+	hit_record rec;
+	if (world.hit(r, 0, infinity, rec)) {
+		return 0.5 * (rec.normal + color(1, 1, 1));
 	}
-	
+
 	// Background color gradient
 	vec3 unit_direction = unit_vector(r.direction());
 	auto a = 0.5 * (unit_direction.y() + 1.0);
@@ -56,6 +35,11 @@ int main()
 	// Png setup
 	const int channels = 3;
 	std::vector<unsigned char> pixels(image_width * image_height * channels);
+
+	// World
+	hittable_list world;
+	world.add(make_shared<sphere>(point3(0, 0, -1), 0.5));
+	world.add(make_shared<sphere>(point3(0, -100.5, -1), 100));
 
 	// Camera
 
@@ -93,8 +77,11 @@ int main()
 			auto pixel_center = pixel00_loc + (i * pixel_delta_u) + (j * pixel_delta_v);
 			// Orthoganal, not unit vector
 			auto ray_direction = pixel_center - camera_center;
+
 			ray r(camera_center, ray_direction);
-			color pixel_color = ray_color(r);
+
+			color pixel_color = ray_color(r, world);
+
 
 			int index = (j * image_width + i) * channels;
 
@@ -105,7 +92,7 @@ int main()
 			int rbyte = int(255.999 * red);
 			int gbyte = int(255.999 * green);
 			int bbyte = int(255.999 * blue);
-			
+
 			pixels[index] = rbyte;
 			pixels[index + 1] = gbyte;
 			pixels[index + 2] = bbyte;
