@@ -5,8 +5,23 @@
 #include <iostream>
 #include <fstream>
 
-// Temp return black
+bool hit_sphere(const point3& center, double radius, const ray& r) {
+	vec3 oc = r.origin() - center;
+	auto a = dot(r.direction(), r.direction());
+	auto b = 2.0 * dot(oc, r.direction());
+	auto c = dot(oc, oc) - radius * radius;
+	auto discriminant = b * b - 4 * a * c;
+	return (discriminant > 0);
+}
+
 color ray_color(const ray& r) {
+	point3 sphere_center(0, 0, -1);
+	double sphere_radius = 0.5;
+
+	if (hit_sphere(sphere_center, sphere_radius, r)) {
+		return color(1, 0, 0);
+	}
+
 	// Background color gradient
 	vec3 unit_direction = unit_vector(r.direction());
 	auto a = 0.5 * (unit_direction.y() + 1.0);
