@@ -36,17 +36,7 @@ public:
 
 				int index = (j * image_width + i) * channels;
 
-				auto red = pixel_color.x();
-				auto green = pixel_color.y();
-				auto blue = pixel_color.z();
-				// Divide the color by the number of samples and gamma-correct for gamma=2.0.
-				int rbyte = int(255.999 * red);
-				int gbyte = int(255.999 * green);
-				int bbyte = int(255.999 * blue);
-
-				pixels[index] = rbyte;
-				pixels[index + 1] = gbyte;
-				pixels[index + 2] = bbyte;
+				write_color(pixels, pixel_color, index);
 			}
 		}
 

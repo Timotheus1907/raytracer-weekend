@@ -3,18 +3,22 @@
 
 #include "vec3.h"
 
+#include <vector>
+
 using color = vec3;
 
-void write_color(std::ostream& out, const color& pixel_color) {
-	auto r = pixel_color.x();
-	auto g = pixel_color.y();
-	auto b = pixel_color.z();
+void write_color(std::vector<unsigned char>& pixels, const color& pixel_color, int index) {
+	auto red = pixel_color.x();
+	auto green = pixel_color.y();
+	auto blue = pixel_color.z();
 	// Divide the color by the number of samples and gamma-correct for gamma=2.0.
-	int rbyte = int(255.999 * r);
-	int gbyte = int(255.999 * g);
-	int bbyte = int(255.999 * b);
-	// Write the translated [0,255] value of each color component.
-	out << rbyte << ' ' << gbyte << ' ' << bbyte << '\n';
+	int rbyte = int(255.999 * red);
+	int gbyte = int(255.999 * green);
+	int bbyte = int(255.999 * blue);
+
+	pixels[index] = rbyte;
+	pixels[index + 1] = gbyte;
+	pixels[index + 2] = bbyte;
 }
 
 
