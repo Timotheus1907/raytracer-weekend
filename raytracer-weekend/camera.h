@@ -15,7 +15,7 @@ class camera {
 public:
 	double aspect_ratio = 1.0;
 	int image_width = 100;
-	int samples_per_pixel = 100;
+	int samples_per_pixel = 16;
 
 
 	void render(const hittable& world){
