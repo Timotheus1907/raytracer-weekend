@@ -1,6 +1,7 @@
 #ifndef COLOR_H
 #define COLOR_H
 
+#include "interval.h"
 #include "vec3.h"
 
 #include <vector>
@@ -11,10 +12,12 @@ void write_color(std::vector<unsigned char>& pixels, const color& pixel_color, i
 	auto red = pixel_color.x();
 	auto green = pixel_color.y();
 	auto blue = pixel_color.z();
-	// Divide the color by the number of samples and gamma-correct for gamma=2.0.
-	int rbyte = int(255.999 * red);
-	int gbyte = int(255.999 * green);
-	int bbyte = int(255.999 * blue);
+	// Divide the color by the number of samples
+	// Translate the color to [0,255] range
+	static const interval intensity(0.0, 0.999);
+	int rbyte = int(256 * intensity.clamp(red));
+	int gbyte = int(256 * intensity.clamp(green));
+	int bbyte = int(256 * intensity.clamp(blue));
 
 	pixels[index] = rbyte;
 	pixels[index + 1] = gbyte;
