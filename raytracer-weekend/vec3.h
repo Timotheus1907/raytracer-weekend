@@ -100,5 +100,26 @@ inline vec3 unit_vector(vec3 v) {
 	return v / v.length();
 }
 
+inline vec3 random_unit_vector() {
+	while (true) {
+		auto p = vec3::random(-1, 1);
+		auto lensq = p.length_squared();
+		// Check if length is less than 1,
+		// Random vectors above 1 in length will bias towards corners of unit sphere
+		// Think of it as taking samples from a cube and only keeping the ones inside a sphere
+		// Minimum length is 1e-160 to avoid sqrt(lensq) evaluating to 0
+		if (1e-160 < lensq && lensq <= 1) return p / sqrt(lensq);
+	}
+}
+
+inline vec3 random_on_hemisphere(const vec3& normal) {
+	vec3 in_unit_sphere = random_unit_vector();
+	if (dot(in_unit_sphere, normal) > 0.0) // In the same hemisphere as the normal
+		return in_unit_sphere;
+	else
+		return -in_unit_sphere;
+
+}
+
 
 #endif
