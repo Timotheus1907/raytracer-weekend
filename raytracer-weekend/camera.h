@@ -112,13 +112,13 @@ private:
 		hit_record rec;
 
 		if (world.hit(r, interval(0.001, infinity), rec)) {
-			//return 0.5 * (rec.normal + color(1, 1, 1)); return color depnding on normal
-			vec3 direction = random_on_hemisphere(rec.normal);
+			// Lambertian reflection
+			vec3 direction = rec.normal + random_unit_vector();
 			// Recursive if random hit ray keeps hitting another object
 			return 0.5 * ray_color(ray(rec.p, direction), depth - 1, world);
 		}
 
-		// Background color gradient
+		// Background color gradient, it's the current light sauce
 		vec3 unit_direction = unit_vector(r.direction());
 		auto a = 0.5 * (unit_direction.y() + 1.0);
 		return (1.0 - a) * color(1.0, 1.0, 1.0) + a * color(0.5, 0.7, 1.0);
