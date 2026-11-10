@@ -43,6 +43,12 @@ public:
 		return e[0] * e[0] + e[1] * e[1] + e[2] * e[2];
 	}
 
+	bool near_zero() const {
+		// True if vector is close to zero in all direction s
+		auto s = 1e-8;
+		return (std::fabs(e[0]) < s) && ((e[1]) < s) && ((e[2]) < s);
+	}
+
 	static vec3 random() {
 		return vec3(random_double(), random_double(), random_double());
 	}
