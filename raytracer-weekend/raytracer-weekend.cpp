@@ -9,6 +9,8 @@
 #define STB_IMAGE_WRITE_IMPLEMENTATION
 #include "stb_image_write.h"
 
+#include <chrono>
+
 
 int main()
 {
@@ -21,8 +23,19 @@ int main()
 
 	cam.aspect_ratio = 16.0 / 9.0;
 	cam.image_width = 1280;
+	cam.samples_per_pixel = 16;
+	cam.max_depth = 8;
+
+	auto start = std::chrono::high_resolution_clock::now();
+
 
 	cam.render(world);
+
+	auto end = std::chrono::high_resolution_clock::now();
+
+	double seconds = std::chrono::duration<double>(end - start).count();
+
+	std::cout << std::fixed << std::setprecision(3) << "Render time: " << seconds << " seconds" << std::endl;
 
 	return 0;
 }
