@@ -2,8 +2,7 @@
 #define CAMERA_H
 
 // Temp, stop visual studio related errors
-//#include "rtweekend.h"
-//
+// #include "rtweekend.h"
 
 #include "hittable.h"
 
@@ -109,7 +108,10 @@ private:
 	color ray_color(const ray& r, const hittable& world) const {
 		hit_record rec;
 		if (world.hit(r, interval(0, infinity), rec)) {
-			return 0.5 * (rec.normal + color(1, 1, 1));
+			//return 0.5 * (rec.normal + color(1, 1, 1)); return color depnding on normal
+			vec3 direction = random_on_hemisphere(rec.normal);
+			// Recursive if random hit ray keeps hitting another object
+			return 0.5 * ray_color(ray(rec.p, direction), world);
 		}
 
 		// Background color gradient
