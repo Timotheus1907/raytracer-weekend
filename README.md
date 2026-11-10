@@ -1,7 +1,7 @@
 ![Project screenshot](raytracer-weekend/image.png)
 
 # WIP
-Currently work in progress. Following the book *Ray Tracing in One Weekend*. With the aim to later modify it and implement additional features of my own.
+Currently work in progress. Following the book [_Ray Tracing in One Weekend_](https://raytracing.github.io/books/RayTracingInOneWeekend.html). With the aim to later modify it and implement additional features of my own.
 
 ### Extended Personal Goals
 
