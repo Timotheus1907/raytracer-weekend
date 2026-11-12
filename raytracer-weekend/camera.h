@@ -18,6 +18,8 @@ public:
 	int samples_per_pixel = 10;
 	int max_depth = 10;
 
+	double vfov = 90.0;
+
 
 	void render(const hittable& world){
 		initialize();
@@ -72,8 +74,10 @@ private:
 		// Camera
 
 		auto focal_length = 1.0;
+		auto theta = degrees_to_radians(vfov);
+		auto h = std::tan(theta / 2);
 		// Viewport widths less than one are ok
-		auto viewport_height = 2.0;
+		auto viewport_height = 2.0 * h * focal_length;
 		auto viewport_width = viewport_height * (double(image_width) / image_height); // Viewport width is scaled to the image width and height
 
 		// Calculate the horizontal and vertical vectors of the viewport edges
